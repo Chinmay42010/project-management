@@ -15,10 +15,10 @@ const generateAccessAndRefresh = async (userId) => {
         return {accessToken, refreshToken}
 
     } catch (error) {
-        throw new ApiError{
+        throw new ApiError (
             500,
             "Something went wrong while generating the token"
-        }
+        )
     }
 }
 
@@ -47,17 +47,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
     await user.save({validateBeforeSave: false})
 
-    const sendEmail = await sendEmail({
+    await sendEmail({
         email: user?.email,
         subject: "Please verify your email",
         mailgenContent: emailVerificationMailGenContent(
             user.username,
-            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`
+            `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unHashedToken}`
         )
     })
 
-    const createdUser = await user.findById(user._id).select(
-        "-password -refreshToken -emailVerificationtoken -emailVerificationExpiry",
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
     )
 
     if(!createdUser) {
@@ -66,7 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
         .status(201)
-        .josn(
+        .json(
             new ApiResponse(
                 200,
                 {user: createdUser},
@@ -76,4 +76,3 @@ const registerUser = asyncHandler(async (req, res) => {
 }) 
 
 export { registerUser };
-

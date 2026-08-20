@@ -11,10 +11,10 @@ const sendEmail = async (options) => {
     });
 
     const emailTextual = mailGenerator.generatePlaintext(
-        options.mialgenContent,
+        options.mailgenContent,
     );
 
-    const emailHTML = mailGenerator.generate(options.mialgenContent);
+    const emailHTML = mailGenerator.generate(options.mailgenContent);
 
     const transporter = nodemailer.createTransport({
         host: process.env.MAILTRAP_SMTP_HOST,
@@ -27,14 +27,14 @@ const sendEmail = async (options) => {
 
     const mail = {
         from: "mail.taskmanager.com",
-        to: "options.email",
+        to: options.email,
         subject: options.subject,
         text: emailTextual,
         html: emailHTML,
     };
 
     try {
-        await transporter.sendEmail(mail);
+        await transporter.sendMail(mail);
     } catch (error) {
         console.error(
             "Email service failed, make sure that you have provided credentials are in the .env file",
