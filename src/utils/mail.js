@@ -26,7 +26,7 @@ const sendEmail = async (options) => {
     });
 
     const mail = {
-        from: "mail.taskmanager.com",
+        from: `"Task Manager" <no-reply@taskmanager.com>`,
         to: options.email,
         subject: options.subject,
         text: emailTextual,

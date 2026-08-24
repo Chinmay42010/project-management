@@ -5,8 +5,8 @@ const userRegisterValidator = () => {
         body("email")
             .trim()
             .notEmpty()
-            .withMessage("Email is retuired")
-            .isEmail
+            .withMessage("Email is required")
+            .isEmail()
             .withMessage("Email is invalid"),
         body("username")
             .trim()
@@ -21,8 +21,8 @@ const userRegisterValidator = () => {
             .notEmpty()
             .withMessage("Password can't be empty"),
         body("fullName")
-            .trim()
             .optional()
+            .trim()
     ]
 }
 
