@@ -16,10 +16,13 @@ const projectMemberSchema = new Schema(
         role: {
             type: String,
             enum: AvailableUserRole,
-            default: UserRoleEnum.MEMBER
-        }
+            default: UserRoleEnum.MEMBER,
+        },
     },
     { timestamps: true },
 );
 
-export const ProjectMember = mongoose.model("ProjectMember", projectMemberSchema);
+export const ProjectMember = mongoose.model(
+    "ProjectMember",
+    projectMemberSchema,
+);

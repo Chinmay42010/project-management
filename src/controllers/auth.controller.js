@@ -237,7 +237,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
         req.cookies.refreshToken || req.body.refreshToken;
 
-    console.error("REFRESH_IN", JSON.stringify(req.body), "cookie:", req.cookies.refreshToken);
+    console.error(
+        "REFRESH_IN",
+        JSON.stringify(req.body),
+        "cookie:",
+        req.cookies.refreshToken,
+    );
     if (!incomingRefreshToken) {
         throw new ApiError(401, "Unauthorized Access");
     }
@@ -278,7 +283,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                 ),
             );
     } catch (error) {
-        console.error("REFRESH_ERR", incomingRefreshToken?.length, error.message);
+        console.error(
+            "REFRESH_ERR",
+            incomingRefreshToken?.length,
+            error.message,
+        );
         throw new ApiError(401, "Invalid refresh token");
     }
 });
@@ -292,7 +301,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User does not exist");
     }
 
-        const { unHashedToken, hashedToken, tokenExpiry } =
+    const { unHashedToken, hashedToken, tokenExpiry } =
         user.generateTemporaryToken();
 
     console.log("RESET_TOKEN", unHashedToken);
