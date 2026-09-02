@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { AvailableUserRole } from "../utils/constants.js";
 
 const userRegisterValidator = () => {
     return [
@@ -14,41 +15,29 @@ const userRegisterValidator = () => {
             .withMessage("Username is required")
             .isLowercase()
             .withMessage("Username must be in lowercase")
-            .isLength({min: 3})
+            .isLength({ min: 3 })
             .withMessage("Username must be atleast 3 charecters"),
         body("password")
             .trim()
             .notEmpty()
             .withMessage("Password can't be empty"),
-        body("fullName")
-            .optional()
-            .trim()
-    ]
-}
+        body("fullName").optional().trim(),
+    ];
+};
 
 const userLoginValidator = () => {
     return [
-        body("email")
-            .optional()
-            .isEmail()
-            .withMessage("Email is invalid"),
-        body("password")
-            .notEmpty()
-            .withMessage("password is required")
-    ]
-}
+        body("email").optional().isEmail().withMessage("Email is invalid"),
+        body("password").notEmpty().withMessage("password is required"),
+    ];
+};
 
 const userChangeCurrentPasswordValidator = () => {
     return [
-        body("oldPassword")
-            .notEmpty()
-            .withMessage("Old password is required"),
-        body("newPassword")
-            .notEmpty()
-            .withMessage("New password is required"),
-        
-    ]
-}
+        body("oldPassword").notEmpty().withMessage("Old password is required"),
+        body("newPassword").notEmpty().withMessage("New password is required"),
+    ];
+};
 
 const userForgotPasswordValidator = () => {
     return [
@@ -56,22 +45,45 @@ const userForgotPasswordValidator = () => {
             .notEmpty()
             .withMessage("Email is required")
             .isEmail()
-            .withMessage("Email is invalid")
-        ]
-}
+            .withMessage("Email is invalid"),
+    ];
+};
 
 const userResetForgotPasswordValidator = () => {
     return [
-        body("newPassword")
+        body("newPassword").notEmpty().withMessage("New password is required"),
+    ];
+};
+
+const createProjectValidator = () => {
+    return [
+        body("name").notEmpty().withMessage("Name is required"),
+        body("description").optional(),
+    ];
+};
+
+const addMemberToProjectValidator = () => {
+    return [
+        body("email")
             .notEmpty()
-            .withMessage("New password is required")
+            .withMessage("Email is required")
+            .isEmail()
+            .withMessage("Email is invalid"),
+        body("role")
+            .notEmpty()
+            .withMessage("Role is required")
+            .isIn(AvailableUserRole)
+            .withMessage("Role is invalid")
+
     ]
 }
 
 export {
-    userRegisterValidator, 
+    addMemberToProjectValidator,
+    userRegisterValidator,
     userLoginValidator,
     userChangeCurrentPasswordValidator,
     userForgotPasswordValidator,
-    userResetForgotPasswordValidator
-}
+    userResetForgotPasswordValidator,
+    createProjectValidator,
+};

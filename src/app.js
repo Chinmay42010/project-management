@@ -3,6 +3,9 @@ import cors from "cors";
 import { ApiError } from "./utils/api_error.js";
 import { ApiResponse } from "./utils/api_response.js";
 import cookieParser from "cookie-parser";
+import healthCheckRouter from "./routes/healthcheck.routes.js";
+import authRouter from "./routes/auth.routes.js";
+import projectrouter from "./routes/project.routes.js";
 
 const app = express();
 
@@ -25,11 +28,10 @@ app.use(
 
 // import thr routes
 
-import healthCheckRouter from "./routes/healthcheck.routes.js";
-import authRouter from "./routes/auth.routes.js";
 
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/projects", projectrouter);
 
 app.get("/", (req, res) => {
     res.send(`Welcome to postman`);

@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/api_response.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api_error.js";
 import mongoose from "mongoose";
-import { AvailableUserRole, UserRoleEnum } from "../utils/constants.js";
+import { AvailableUserRole, UserRolesEnum } from "../utils/constants.js";
 
 const getProject = asyncHandler(async (req, res) => {
     //test
@@ -92,7 +92,7 @@ const createProject = asyncHandler(async (req, res) => {
     await ProjectMember.create({
         user: new mongoose.Types.ObjectId(req.user._id),
         project: new mongoose.Types.ObjectId(project._id),
-        role: UserRoleEnum.ADMIN,
+        role: UserRolesEnum.ADMIN,
     });
 
     return res
@@ -237,7 +237,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 
 const updateMemberRole = asyncHandler(async (req, res) => {
     //test
-    const { projectId, userID } = req.params;
+    const { projectId, userId } = req.params;
     const { newRole } = req.body;
 
     if (!AvailableUserRole.includes(newRole)) {
@@ -246,7 +246,7 @@ const updateMemberRole = asyncHandler(async (req, res) => {
 
     let projectMember = await ProjectMember.findOne({
         project: new mongoose.Types.ObjectId(projectId),
-        user: new mongoose.Types.ObjectId(userID),
+        user: new mongoose.Types.ObjectId(userId),
     });
 
     if (!projectMember) {
@@ -276,11 +276,11 @@ const updateMemberRole = asyncHandler(async (req, res) => {
 });
 const deleteMember = asyncHandler(async (req, res) => {
     //test
-    const { projectId, userID } = req.params;
+    const { projectId, userId } = req.params;
 
     let projectMember = await ProjectMember.findOne({
         project: new mongoose.Types.ObjectId(projectId),
-        user: new mongoose.Types.ObjectId(userID),
+        user: new mongoose.Types.ObjectId(userId),
     });
 
     if (!projectMember) {
