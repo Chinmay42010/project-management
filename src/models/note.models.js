@@ -7,7 +7,7 @@ const projectNoteSchema = new Schema(
             ref: "Project",
             required: true,
         },
-        createdby: {
+        createdBy: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,

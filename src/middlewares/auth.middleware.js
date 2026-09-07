@@ -40,18 +40,21 @@ export const validateProjectpermission = (roles = []) => {
 
         const project = await ProjectMember.findOne({
             project: new mongoose.Types.ObjectId(projectId),
-            user: new mongoose.Types.ObjectId(req.user._id)
-        })
+            user: new mongoose.Types.ObjectId(req.user._id),
+        });
 
-        if(!project) {
-            throw new ApiError(400, "Project not found")
+        if (!project) {
+            throw new ApiError(400, "Project not found");
         }
 
-        const givenRole = project?.role
-        req.user.role = givenRole
-        
-        if(!roles.includes(givenRole)) {
-            throw new ApiError(403, "You do not have the permission to perform this action")
+        const givenRole = project?.role;
+        req.user.role = givenRole;
+
+        if (!roles.includes(givenRole)) {
+            throw new ApiError(
+                403,
+                "You do not have the permission to perform this action",
+            );
         }
 
         next();
