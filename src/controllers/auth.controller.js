@@ -158,7 +158,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 req.user,
-                "Currrent user feteched successfully",
+                "Current user fetched successfully",
             ),
         );
 });
@@ -167,7 +167,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     const { verificationToken } = req.params;
 
     if (!verificationToken) {
-        throw new ApiError(400, "Emial verification token is missing");
+        throw new ApiError(400, "Email verification token is missing");
     }
 
     let hashedToken = crypto
@@ -325,7 +325,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {},
-                "Password rest mail has been sent on your regsiterd mail id",
+                "Password reset mail has been sent to your registered email id",
             ),
         );
 });
@@ -359,7 +359,7 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
-const changeCurrentassworrd = asyncHandler(async (req, res) => {
+const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user?._id);
@@ -388,5 +388,5 @@ export {
     refreshAccessToken,
     forgotPasswordRequest,
     resetForgotPassword,
-    changeCurrentassworrd,
+    changeCurrentPassword,
 };

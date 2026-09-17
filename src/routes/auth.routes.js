@@ -10,7 +10,7 @@ import {
     forgotPasswordRequest,
     resetForgotPassword,
     getCurrentUser,
-    changeCurrentassworrd,
+    changeCurrentPassword,
     resendEmailVerification,
 } from "../controllers/auth.controller.js";
 import {
@@ -43,7 +43,10 @@ router
 // secure route
 router.route("/logout").post(verifyJWT, logoutUser);
 
-router.route("/current-user").post(verifyJWT, getCurrentUser);
+router
+    .route("/current-user")
+    .get(verifyJWT, getCurrentUser)
+    .post(verifyJWT, getCurrentUser);
 
 router
     .route("/change-password")
@@ -51,7 +54,7 @@ router
         verifyJWT,
         userChangeCurrentPasswordValidator(),
         validate,
-        changeCurrentassworrd,
+        changeCurrentPassword,
     );
 
 router

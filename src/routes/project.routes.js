@@ -6,7 +6,7 @@ import {
     updateProject,
     getProjectMembers,
     getProjectById,
-    addMemberesToProject,
+    addMembersToProject,
     updateMemberRole,
     deleteMember,
     deleteProject,
@@ -43,12 +43,12 @@ router
 
 router
     .route("/:projectId/members")
-    .get(getProjectMembers)
+    .get(validateProjectpermission(AvailableUserRole), getProjectMembers)
     .post(
         validateProjectpermission([UserRolesEnum.ADMIN]),
         addMemberToProjectValidator(),
         validate,
-        addMemberesToProject,
+        addMembersToProject,
     );
 
 router

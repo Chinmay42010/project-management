@@ -6,6 +6,9 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api_error.js";
 import mongoose from "mongoose";
 import { AvailableUserRole, UserRolesEnum } from "../utils/constants.js";
+import { Task } from "../models/task.models.js";
+import { Subtask } from "../models/subtask.models.js";
+import { ProjectNote } from "../models/note.models.js";
 
 const getProject = asyncHandler(async (req, res) => {
     //test
@@ -124,21 +127,34 @@ const updateProject = asyncHandler(async (req, res) => {
 });
 
 const deleteProject = asyncHandler(async (req, res) => {
-    //test
     const { projectId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new ApiError(400, "Invalid Project ID");
+    }
 
     const project = await Project.findByIdAndDelete(projectId);
 
     if (!project) {
-        throw new ApiError(404, "Project Not found");
+        throw new ApiError(404, "Project not found");
+    }
+
+    // Cascade clean up members, notes, tasks and subtasks
+    await ProjectMember.deleteMany({ project: projectId });
+    await ProjectNote.deleteMany({ project: projectId });
+    const tasks = await Task.find({ project: projectId }).select("_id");
+    const taskIds = tasks.map((t) => t._id);
+    if (taskIds.length > 0) {
+        await Subtask.deleteMany({ task: { $in: taskIds } });
+        await Task.deleteMany({ _id: { $in: taskIds } });
     }
 
     return res
         .status(200)
-        .json(new ApiResponse(200, project, "Project Deleted Successfully"));
+        .json(new ApiResponse(200, project, "Project deleted successfully"));
 });
 
-const addMemberesToProject = asyncHandler(async (req, res) => {
+const addMembersToProject = asyncHandler(async (req, res) => {
     //test
     const { email, role } = req.body;
     const { projectId } = req.params;
@@ -146,7 +162,7 @@ const addMemberesToProject = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-        throw new ApiError(404, "User does not exixst");
+        throw new ApiError(404, "User does not exist");
     }
 
     await ProjectMember.findOneAndUpdate(
@@ -310,7 +326,7 @@ export {
     updateProject,
     getProjectMembers,
     getProjectById,
-    addMemberesToProject,
+    addMembersToProject,
     updateMemberRole,
     deleteMember,
     deleteProject,

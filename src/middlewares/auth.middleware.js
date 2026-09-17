@@ -38,13 +38,20 @@ export const validateProjectpermission = (roles = []) => {
             throw new ApiError(400, "Project ID is missing");
         }
 
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            throw new ApiError(400, "Invalid Project ID");
+        }
+
         const project = await ProjectMember.findOne({
             project: new mongoose.Types.ObjectId(projectId),
             user: new mongoose.Types.ObjectId(req.user._id),
         });
 
         if (!project) {
-            throw new ApiError(400, "Project not found");
+            throw new ApiError(
+                403,
+                "You do not have access to this project",
+            );
         }
 
         const givenRole = project?.role;
