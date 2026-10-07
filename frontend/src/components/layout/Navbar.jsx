@@ -1,139 +1,151 @@
-import { Link, useLocation, NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Button } from '../ui/Button';
-import { Avatar } from '../ui/Avatar';
-import { Menu, X, LogOut, User, Settings, Home, FolderKanban, FileText } from 'lucide-react';
+import { Hash, Lock, ChevronDown, Plus, Home, FolderKanban, LogOut, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { projectApi } from '../../api/client';
 
-const navigation = [
+const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Projects', href: '/projects', icon: FolderKanban },
-  { name: 'Tasks', href: '/tasks', icon: FileText },
 ];
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { data } = useQuery({ queryKey: ['projects'], queryFn: () => projectApi.list() });
+  const projects = data?.data?.data || [];
 
-  return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link to="/dashboard" className="flex items-center gap-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">
-              <FolderKanban className="w-6 h-6" />
-              <span>ProjectCamp</span>
-            </Link>
-
-            <div className="hidden md:flex md:gap-1">
-              {navigation.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                        : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                    }`
-                  }
-                >
-                  <item.icon className="w-5 h-5" aria-hidden="true" />
-                  {item.name}
-                </NavLink>
-              ))}
-            </div>
+  const SidebarContent = () => (
+    <>
+      {/* Workspace switcher */}
+      <div className="h-[44px] flex items-center gap-2 px-3 border-b border-white/10 shrink-0">
+        <div className="w-9 h-9 rounded-[6px] bg-white text-[#4A154B] flex items-center justify-center font-bold text-[16px]">◈</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-[15px] leading-none truncate">ProjectCamp</span>
+            <ChevronDown className="w-3.5 h-3.5 opacity-70 shrink-0" />
           </div>
+          <span className="text-[12px] opacity-70 flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#2EB67D] inline-block" /> {user?.fullName || user?.username}
+          </span>
+        </div>
+        <Link to="/projects/new" className="w-8 h-8 rounded-full bg-white text-[#4A154B] flex items-center justify-center hover:bg-white/90" title="New project">
+          <Plus className="w-4 h-4" />
+        </Link>
+      </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-menu"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+      {/* Compose / New */}
+      <div className="px-3 py-3">
+        <Link to="/projects/new" className="flex items-center gap-2 bg-white text-[#4A154B] rounded-full px-3 py-1.5 text-[13px] font-medium hover:bg-white/90 w-fit shadow-sm">
+          <Plus className="w-3.5 h-3.5" /> New project
+        </Link>
+      </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-expanded={userMenuOpen}
-                aria-haspopup="true"
+      {/* Navigation */}
+      <div className="px-2 space-y-4 overflow-y-auto slack-scrollbar flex-1">
+        <div>
+          <div className="flex items-center justify-between px-2 py-1">
+            <span className="text-[13px] font-semibold opacity-80">Home</span>
+          </div>
+          <div className="space-y-0.5">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-2 py-1 rounded-[6px] text-[15px] ${isActive ? 'bg-[#1164A3] text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`
+                }
               >
-                <Avatar name={user?.fullName || user?.username || 'User'} size="sm" src={user?.avatar?.url} />
-                <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {user?.fullName || user?.username}
-                </span>
-              </button>
-
-              {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-in fade-in-0 zoom-in-95">
-                  <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.fullName || user?.username}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                  </div>
-                  <NavLink
-                    to="/settings"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <User className="w-4 h-4" />
-                    Profile
-                  </NavLink>
-                  <NavLink
-                    to="/settings"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Settings className="w-4 h-4" />
-                    Settings
-                  </NavLink>
-                  <hr className="my-1 border-gray-200 dark:border-gray-700" />
-                  <button
-                    onClick={() => {
-                      logout();
-                      setUserMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
+                <item.icon className="w-4 h-4 opacity-80" /> {item.name}
+              </NavLink>
+            ))}
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <div id="mobile-menu" className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700 animate-in slide-in-from-top-2">
-            <div className="flex flex-col gap-1">
-              {navigation.map((item) => (
+        <div>
+          <div className="flex items-center justify-between px-2 py-1">
+            <span className="text-[13px] font-semibold opacity-80">Channels</span>
+            <Link to="/projects/new" className="p-1 hover:bg-white/10 rounded" title="New project"><Plus className="w-3.5 h-3.5 opacity-70" /></Link>
+          </div>
+          <div className="space-y-0.5">
+            {projects.length === 0 ? (
+              <span className="px-2 py-1 text-[13px] text-white/60">No projects yet — create one</span>
+            ) : (
+              projects.slice(0, 12).map((p) => (
                 <NavLink
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  key={p._id}
+                  to={`/projects/${p._id}`}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${
-                      isActive
-                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                        : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                    }`
+                    `flex items-center gap-2 px-2 py-1 rounded-[6px] text-[15px] truncate ${isActive ? 'bg-[#1164A3] text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`
                   }
                 >
-                  <item.icon className="w-5 h-5" />
-                  {item.name}
+                  <Hash className="w-3.5 h-3.5 opacity-60 shrink-0" />
+                  <span className="truncate">{p.name}</span>
+                  {p.role === 'admin' && <Lock className="w-3 h-3 opacity-40 ml-auto shrink-0" />}
                 </NavLink>
-              ))}
-            </div>
+              ))
+            )}
+            {projects.length > 12 && (
+              <span className="px-2 text-xs text-white/50">+{projects.length - 12} more</span>
+            )}
           </div>
-        )}
-      </nav>
-    </header>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between px-2 py-1">
+            <span className="text-[13px] font-semibold opacity-80">Direct messages</span>
+          </div>
+          <div className="flex items-center gap-2 px-2 py-1 text-[15px] text-white/80">
+            <span className="w-6 h-6 rounded-[4px] bg-[#1164A3] flex items-center justify-center text-xs font-bold">{(user?.fullName || user?.username || 'U')[0]?.toUpperCase()}</span>
+            <span className="truncate">{user?.fullName || user?.username}</span>
+            <span className="text-[11px] opacity-60 ml-auto">you</span>
+          </div>
+        </div>
+      </div>
+
+      {/* User footer */}
+      <div className="border-t border-white/10 p-2 mt-auto">
+        <div className="flex items-center gap-2 px-2 py-1.5 rounded-[6px] hover:bg-white/10">
+          <div className="w-7 h-7 rounded-[4px] bg-[#2EB67D] flex items-center justify-center text-xs font-bold text-white">{(user?.fullName || 'U')[0].toUpperCase()}</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-medium leading-none truncate">{user?.fullName || user?.username}</p>
+            <p className="text-[11px] opacity-60 truncate">{user?.email}</p>
+          </div>
+          <button onClick={logout} className="p-1.5 rounded hover:bg-white/10" title="Sign out"><LogOut className="w-4 h-4 opacity-70" /></button>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 inset-x-0 h-[44px] bg-[#4A154B] text-white flex items-center px-3 z-30">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 -ml-2"><Menu className="w-5 h-5" /></button>
+        <span className="font-bold ml-2">ProjectCamp</span>
+      </div>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-[280px] shrink-0 bg-[#4A154B] text-white flex-col sticky top-0 h-screen">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 flex">
+          <div className="flex-1 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <aside className="w-[280px] bg-[#4A154B] text-white flex flex-col h-full">
+            <div className="h-[44px] flex items-center justify-between px-3 border-b border-white/10">
+              <span className="font-bold">ProjectCamp</span>
+              <button onClick={() => setMobileOpen(false)} className="p-2"><X className="w-5 h-5" /></button>
+            </div>
+            <SidebarContent />
+          </aside>
+        </div>
+      )}
+      {/* spacer for mobile top bar */}
+      <div className="lg:hidden h-[44px] shrink-0 lg:h-0" />
+    </>
   );
 }

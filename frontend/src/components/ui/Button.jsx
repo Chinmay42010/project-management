@@ -2,29 +2,25 @@ import { forwardRef } from 'react';
 
 export const Button = forwardRef(
   ({ className = '', variant = 'primary', size = 'md', loading, disabled, children, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    const base = 'inline-flex items-center justify-center font-bold rounded-[6px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#36C5F0] focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
-      primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
-      outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-indigo-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
-      ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-800',
-      danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+      primary: 'bg-[#2EB67D] text-white hover:bg-[#259e6b] border border-transparent',
+      secondary: 'bg-white text-[#1D1C1D] border border-[#DDDDDD] hover:bg-[#F8F8F8]',
+      outline: 'border border-[#DDDDDD] text-[#1D1C1D] hover:bg-[#F8F8F8] bg-white',
+      ghost: 'text-[#1D1C1D] hover:bg-[#F8F8F8] border border-transparent',
+      danger: 'bg-[#E01E5A] text-white hover:bg-[#c91a50] border border-transparent',
+      slack: 'bg-[#4A154B] text-white hover:bg-[#3a1140] border border-transparent',
     };
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm gap-1.5',
-      md: 'px-4 py-2 text-base gap-2',
-      lg: 'px-6 py-3 text-lg gap-2',
+      sm: 'px-3 py-1.5 text-[13px] gap-1.5',
+      md: 'px-4 py-2 text-[15px] gap-2',
+      lg: 'px-6 py-3 text-[16px] gap-2',
     };
 
     return (
-      <button
-        ref={ref}
-        className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
-        disabled={disabled || loading}
-        {...props}
-      >
+      <button ref={ref} className={`${base} ${variants[variant] || variants.primary} ${sizes[size]} ${className}`} disabled={disabled || loading} {...props}>
         {loading && (
           <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
